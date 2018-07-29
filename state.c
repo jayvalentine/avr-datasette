@@ -28,6 +28,14 @@ void state_transition(DatasetteState* state, unsigned char inputs)
   {
     state_transition_idle(state, inputs);
   }
+  else if (*state == PLAY)
+  {
+    state_transition_play(state, inputs);
+  }
+  else if (*state == RECORD)
+  {
+    state_transition_record(state, inputs);
+  }
 }
 
 void state_transition_idle(DatasetteState* state, unsigned char inputs)
@@ -39,5 +47,21 @@ void state_transition_idle(DatasetteState* state, unsigned char inputs)
   else if (inputs & RECORD)
   {
     *state = RECORD;
+  }
+}
+
+void state_transition_play(DatasetteState* state, unsigned char inputs)
+{
+  if (inputs & STOP)
+  {
+    *state = IDLE;
+  }
+}
+
+void state_transition_record(DatasetteState* state, unsigned char inputs)
+{
+  if (inputs & STOP)
+  {
+    *state = IDLE;
   }
 }
