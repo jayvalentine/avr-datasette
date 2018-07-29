@@ -1,6 +1,8 @@
 # Rakefile for compiling AVR projects.
 # (c) 2018 Jay Valentine.
 
+require 'rake/clean'
+
 APP = 'avr-datasette'
 
 DEFINES = {
@@ -11,9 +13,16 @@ AVR_GCC = 'avr-gcc'
 AVR_OBJCOPY = 'avr-objcopy'
 AVR_OBJDUMP = 'avr-objdump'
 
+AVRDUDE = 'avrdude'
+
 SOURCE_FILES = Rake::FileList['*.c']
 
 OBJECT_FILES = SOURCE_FILES.ext('.o')
+
+CLEAN.include('*.o')
+CLOBBER.include('*.hex')
+CLOBBER.include('*.elf')
+CLOBBER.include('*.asm')
 
 # This rule will take a .c file and produce the corresponding .o file.
 rule '.o' => '.c' do |t|
@@ -50,3 +59,11 @@ task :build => :link do
   system("#{AVR_OBJCOPY} -O ihex -R .eeprom #{APP}.elf #{APP}.hex")
   puts "Done."
 end
+
+task :flash => :build do
+  puts "Flashing HEX image..."
+  system("#{AVRDUDE} -F -V -c arduino -p ATMEGA328P -P /dev/ttyACM0 -b 115200 -U flash:w:#{APP}.hex")
+  puts "Done."
+end
+
+task :default => :flash
