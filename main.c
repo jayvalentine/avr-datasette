@@ -52,6 +52,18 @@ ISR(PCINT1_vect)
     inputs |= PLAY;
   }
 
+  /* High to low change on PC1 (RECORD) */
+  if ((PINC & (1 << PINC1)) == 0)
+  {
+    inputs |= RECORD;
+  }
+
+  /* High to low change on PC2 (STOP) */
+  if ((PINC & (1 << PINC2)) == 0)
+  {
+    inputs |= STOP;
+  }
+
   state_transition(&state, inputs);
   sei();
 }
