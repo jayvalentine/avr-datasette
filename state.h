@@ -29,8 +29,15 @@ enum datasette_state
 
 typedef enum datasette_state DatasetteState;
 
+#define PLAY (1)
+#define RECORD (1 << 1)
+#define STOP (1 << 2)
+#define MOTOR (1 << 3)
+
 /* Function declarations. */
 
 void state_init(DatasetteState* state);
+
+void state_transition(DatasetteState* state, unsigned char inputs);
 
 #endif
