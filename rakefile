@@ -45,11 +45,11 @@ end
 
 task :link => OBJECT_FILES do
   puts "Linking object files into #{APP}.elf..."
-  system("#{AVR_GCC} #{OBJECT_FILES} -o #{APP}.elf")
+  system("#{AVR_GCC} #{OBJECT_FILES} -mmcu=atmega328p -Wl,-Map,#{APP}.map -o #{APP}.elf")
   puts "Done."
 
   puts "Disassembling linked ELF file..."
-  system("#{AVR_OBJDUMP} -d #{APP}.elf > #{APP}.asm")
+  system("#{AVR_OBJDUMP} --target=elf32-avr -d #{APP}.elf > #{APP}.asm")
   puts "Done."
 end
 
