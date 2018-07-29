@@ -8,7 +8,19 @@
 
 #include "state.h"
 
+/* Private function declarations. */
+
 void state_transition_idle(DatasetteState* state, unsigned char inputs);
+
+void state_transition_play(DatasetteState* state, unsigned char inputs);
+
+void state_transition_record(DatasetteState* state, unsigned char inputs);
+
+void state_transition_play_paused(DatasetteState* state, unsigned char inputs);
+
+void state_transition_record_paused(DatasetteState* state, unsigned char inputs);
+
+/* Function definitions. */
 
 void state_init(DatasetteState* state)
 {
@@ -36,6 +48,14 @@ void state_transition(DatasetteState* state, unsigned char inputs)
   {
     state_transition_record(state, inputs);
   }
+  else if (*state == PLAY_PAUSED)
+  {
+    state_transition_play_paused(state, inputs);
+  }
+  else if (*state ==  RECORD_PAUSED)
+  {
+    state_transition_record_paused(state, inputs);
+  }
 }
 
 void state_transition_idle(DatasetteState* state, unsigned char inputs)
@@ -56,6 +76,10 @@ void state_transition_play(DatasetteState* state, unsigned char inputs)
   {
     *state = IDLE;
   }
+  else if ((inputs & MOTOR) == 0)
+  {
+    *state = PLAY_PAUSED;
+  }
 }
 
 void state_transition_record(DatasetteState* state, unsigned char inputs)
@@ -63,5 +87,25 @@ void state_transition_record(DatasetteState* state, unsigned char inputs)
   if (inputs & STOP)
   {
     *state = IDLE;
+  }
+  else if ((inputs & MOTOR) == 0)
+  {
+    *state = RECORD_PAUSED;
+  }
+}
+
+void state_transition_play_paused(DatasetteState *state, unsigned char inputs)
+{
+  if (inputs & MOTOR)
+  {
+    *state = PLAY;
+  }
+}
+
+void state_transition_record_paused(DatasetteState *state, unsigned char inputs)
+{
+  if (inputs & MOTOR)
+  {
+    *state = RECORD;
   }
 }
