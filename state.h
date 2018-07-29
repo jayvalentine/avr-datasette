@@ -20,11 +20,11 @@
 
 enum datasette_state
 {
-  IDLE = 0,
-  PLAY = 1,
-  PLAY_PAUSED = 2,
-  RECORD = 3,
-  RECORD_PAUSED = 4
+  IDLE = 0x00,
+  PLAY = 0x01,
+  PLAY_PAUSED = 0x05,
+  RECORD = 0x02,
+  RECORD_PAUSED = 0x06
 };
 
 typedef enum datasette_state DatasetteState;
