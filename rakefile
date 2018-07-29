@@ -1,0 +1,52 @@
+# Rakefile for compiling AVR projects.
+# (c) 2018 Jay Valentine.
+
+APP = 'avr-datasette'
+
+DEFINES = {
+  'F_CPU' => '16000000UL'
+}
+
+AVR_GCC = 'avr-gcc'
+AVR_OBJCOPY = 'avr-objcopy'
+AVR_OBJDUMP = 'avr-objdump'
+
+SOURCE_FILES = Rake::FileList['*.c']
+
+OBJECT_FILES = SOURCE_FILES.ext('.o')
+
+# This rule will take a .c file and produce the corresponding .o file.
+rule '.o' => '.c' do |t|
+  # Collect a string containing all our defines.
+  defines = []
+  DEFINES.each do |key, value|
+    defines << "-D#{key}=#{value}"
+  end
+
+  # Construct the flags we're going to pass to avr-gcc.
+  flags = "-Os #{defines.join(' ')} -mmcu=atmega328p -c -o #{t.name} #{t.source}"
+
+  puts "Compiling #{t.name} from #{t.source}..."
+
+  # Execute, system should emit output to the same streams as the rakefile.
+  system("#{AVR_GCC} #{flags}")
+
+  puts "Done."
+end
+
+task :link => OBJECT_FILES do
+  puts "Linking object files into #{APP}.elf..."
+  system("#{AVR_GCC} #{OBJECT_FILES} -o #{APP}.elf")
+  puts "Done."
+
+  puts "Disassembling linked ELF file..."
+  system("#{AVR_OBJDUMP} -d #{APP}.elf > #{APP}.asm")
+  puts "Done."
+end
+
+# This task builds the final HEX image from the linked ELF.
+task :build => :link do
+  puts "Producing HEX image from linked ELF..."
+  system("#{AVR_OBJCOPY} -O ihex -R .eeprom #{APP}.elf #{APP}.hex")
+  puts "Done."
+end
