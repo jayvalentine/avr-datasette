@@ -96,7 +96,11 @@ void state_transition_record(DatasetteState* state, unsigned char inputs)
 
 void state_transition_play_paused(DatasetteState *state, unsigned char inputs)
 {
-  if (inputs & MOTOR_ON)
+  if (inputs & STOP)
+  {
+    *state = IDLE;
+  }
+  else if (inputs & MOTOR_ON)
   {
     *state = PLAY;
   }
@@ -104,6 +108,10 @@ void state_transition_play_paused(DatasetteState *state, unsigned char inputs)
 
 void state_transition_record_paused(DatasetteState *state, unsigned char inputs)
 {
+  if (inputs & STOP)
+  {
+    *state = IDLE;
+  }
   if (inputs & MOTOR_ON)
   {
     *state = RECORD;
