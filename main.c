@@ -58,15 +58,6 @@ ISR(PCINT1_vect)
 
   unsigned char inputs = 0x00;
 
-  if (PIND & (1 << PIND2))
-  {
-    inputs &= ~MOTOR;
-  }
-  else if ((PIND & (1 << PIND2)) == 0)
-  {
-    inputs |= MOTOR;
-  }
-
   /* High to low change on PC0 (PLAY) */
   if ((PINC & (1 << PINC0)) == 0)
   {
@@ -96,6 +87,9 @@ ISR(INT0_vect)
 {
   cli();
 
+  /* Quick and dirty debouncing */
+  _delay_ms(10);
+
   unsigned char inputs = 0x00;
 
   /* If motor is now high, we are on a rising edge.
@@ -111,11 +105,11 @@ ISR(INT0_vect)
    */
   if (PIND & (1 << PIND2))
   {
-    inputs &= ~MOTOR;
+    inputs |= MOTOR_OFF;
   }
   else if ((PIND & (1 << PIND2)) == 0)
   {
-    inputs |= MOTOR;
+    inputs |= MOTOR_ON;
   }
 
   state_transition(&state, inputs);

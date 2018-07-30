@@ -76,7 +76,7 @@ void state_transition_play(DatasetteState* state, unsigned char inputs)
   {
     *state = IDLE;
   }
-  else if ((inputs & MOTOR) == 0)
+  else if (inputs & MOTOR_OFF)
   {
     *state = PLAY_PAUSED;
   }
@@ -88,7 +88,7 @@ void state_transition_record(DatasetteState* state, unsigned char inputs)
   {
     *state = IDLE;
   }
-  else if ((inputs & MOTOR) == 0)
+  else if (inputs & MOTOR_OFF)
   {
     *state = RECORD_PAUSED;
   }
@@ -96,7 +96,7 @@ void state_transition_record(DatasetteState* state, unsigned char inputs)
 
 void state_transition_play_paused(DatasetteState *state, unsigned char inputs)
 {
-  if (inputs & MOTOR)
+  if (inputs & MOTOR_ON)
   {
     *state = PLAY;
   }
@@ -104,7 +104,7 @@ void state_transition_play_paused(DatasetteState *state, unsigned char inputs)
 
 void state_transition_record_paused(DatasetteState *state, unsigned char inputs)
 {
-  if (inputs & MOTOR)
+  if (inputs & MOTOR_ON)
   {
     *state = RECORD;
   }

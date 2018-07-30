@@ -32,7 +32,8 @@ typedef enum datasette_state DatasetteState;
 #define PLAY (1)
 #define RECORD (1 << 1)
 #define STOP (1 << 2)
-#define MOTOR (1 << 3)
+#define MOTOR_ON (1 << 3)
+#define MOTOR_OFF (1 << 4)
 
 /* Function declarations. */
 
