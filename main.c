@@ -11,11 +11,18 @@
 #include <util/delay.h>
 
 #include "state.h"
+#include "tap.h"
 
 DatasetteState state;
 
+unsigned char timer_pulse_first_phase = 0;
+tap_interval timer_next_interval = 0;
+
 int main(void)
 {
+  /* Disable interrupts during set-up. */
+  cli();
+
   state_init(&state);
 
   /* Set up PORTB as output */
@@ -23,6 +30,10 @@ int main(void)
 
   /* Set up PORTD, pin 2 as input */
   DDRD &= ~(1 << DDD2);
+
+  /* Set up PORTD, pin 3 as output, initially low. */
+  DDRD |= (1 << DDD3);
+  PORTD &= ~(1 << PORTD3);
 
   /* Pull-up for PD2 */
   PORTD |= (1 << PORTD2);
@@ -40,7 +51,26 @@ int main(void)
   /* Set up INT0, both rising- and falling-edge. */
   EICRA |= (1 << ISC00);
   EIMSK |= (1 << INT0);
+  
+  /* Initialize timer control register. */
+  TCCR1A = 0;
+  TCCR1B = 0;
 
+  /* Enable timer compare interrupt. */
+  TIMSK1 |= (1 << OCIE1A);
+
+  /* Run timer at clock speed, 16MHz. */
+  TCCR1B |= (1 << CS10);
+
+  TCCR1B |= (1 << WGM12);
+
+  /* Set initial value of timer to 0xFFFF,
+   * so that it will trigger eventually once
+   * we enable interrupts.
+   */
+  OCR1A = 0xFFFF;
+
+  /* Enable interrupts. */
   sei();
 
   while (1)
@@ -113,6 +143,38 @@ ISR(INT0_vect)
   }
 
   state_transition(&state, inputs);
+
+  sei();
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+  cli();
+
+  /* If we have just finished the first half of a cycle,
+   * set output LOW.
+   *
+   * Otherwise, get the next data byte, set timer accordingly,
+   * and set output HIGH.
+   */
+  if (timer_pulse_first_phase)
+  {
+    timer_pulse_first_phase = 0;
+
+    PORTD ^= (1 << PORTD3);
+  }
+  else
+  {
+    timer_pulse_first_phase = 1;
+
+    PORTD ^= (1 << PORTD3);
+
+    /* Hardcoded test value for now. */
+    timer_next_interval = 33129 / 2;
+  }
+
+  /* Set timer interval again. */
+  OCR1A = timer_next_interval;
 
   sei();
 }

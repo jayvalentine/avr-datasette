@@ -8,6 +8,8 @@
 
 #include "tap.h"
 
+tap_interval tap_byte_to_interval(tap_data_byte byte);
+
 /* Given a doubly-indirected pointer to some TAP data,
  * increment the pointer so that it points to the next data in the file,
  * or 0 if EOF, and return the next interval.

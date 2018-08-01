@@ -11,6 +11,6 @@
 #define C64_H
 
 /* Clock speed of the PAL C64. */
-#define C64_CLOCK_SPEED 985248;
+#define C64_CLOCK_SPEED 985248
 
 #endif

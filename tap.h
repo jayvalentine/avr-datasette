@@ -47,4 +47,6 @@ typedef unsigned short tap_interval;
 
 typedef unsigned char tap_data_byte;
 
+tap_interval tap_get_next_interval(tap_data_byte** data_ptr);
+
 #endif
