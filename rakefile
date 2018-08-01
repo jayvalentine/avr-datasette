@@ -23,6 +23,7 @@ CLEAN.include('*.o')
 CLOBBER.include('*.hex')
 CLOBBER.include('*.elf')
 CLOBBER.include('*.asm')
+CLOBBER.include('*.map')
 
 # This rule will take a .c file and produce the corresponding .o file.
 rule '.o' => '.c' do |t|
