@@ -10,6 +10,8 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include <stdio.h>
+
 #include "state.h"
 #include "tap.h"
 
@@ -18,10 +20,21 @@ DatasetteState state;
 unsigned char timer_pulse_first_phase = 0;
 tap_interval timer_next_interval = 0;
 
+tap_data_byte data[1] =
+{
+  0xFF
+};
+
+tap_data_byte* end_address = (tap_data_byte*)data;
+
+tap_data_byte* current_data;
+
 int main(void)
 {
   /* Disable interrupts during set-up. */
   cli();
+
+  current_data = (tap_data_byte*)data;
 
   state_init(&state);
 
@@ -169,8 +182,14 @@ ISR(TIMER1_COMPA_vect)
 
     PORTD ^= (1 << PORTD3);
 
-    /* Hardcoded test value for now. */
-    timer_next_interval = 33129 / 2;
+    /* Get next interval from TAP data. */
+    PORTB = (unsigned char)*current_data;
+    timer_next_interval = tap_get_next_interval(&current_data, end_address) / 2;
+    current_data++;
+    if (current_data > end_address)
+    {
+      current_data = (tap_data_byte*)data;
+    }
   }
 
   /* Set timer interval again. */

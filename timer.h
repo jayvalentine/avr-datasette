@@ -14,6 +14,6 @@
  * nasty floating-point calculations, so we round this
  * to 63.
  */
-#define TIMER_INTERVAL_NS 63
+#define TIMER_INTERVAL_NS 63UL
 
 #endif

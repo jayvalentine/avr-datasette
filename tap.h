@@ -18,7 +18,7 @@
  * (8 * BYTE) / CYCLES
  *
  * Where CYCLES is the clock cycles per second of the PAL C64,
- * which is 985,248 (just under 1MHz).
+ * which is 985,248 (just under 1KHz).
  *
  * Therefore, with a single byte, the minimum cycle length is
  * (8 * 1) / 985,248 = 8,120 ns
@@ -41,12 +41,14 @@
  * should do the trick!
  */
 
+#define NANOSECOND_SCALING 1000000000UL
+
 typedef unsigned short tap_interval;
 
 /* Width of values in TAP file is 1 byte. */
 
 typedef unsigned char tap_data_byte;
 
-tap_interval tap_get_next_interval(tap_data_byte** data_ptr);
+tap_interval tap_get_next_interval(tap_data_byte** data_ptr, tap_data_byte* const end);
 
 #endif
